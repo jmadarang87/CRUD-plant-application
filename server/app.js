@@ -53,7 +53,19 @@ app.get('/createplantstable', (req, res) => {
 app.get('/api/get', (req, res) => {
     let sql = "SELECT * FROM plantys.plants"
     db.query(sql, (err, result) => {
+        console.log(typeof result);
+        console.log(result);
         res.send(result);
+    });
+});
+
+app.get("/api/search/:term", (req, res) => {
+    const searchTerm = "%" + req.params.term + "%";
+    let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
+    db.query(sql, [searchTerm], (err, result) => {
+        console.log(result);
+        res.send(result);
+        if (err) console.log(err);
     });
 });
 
