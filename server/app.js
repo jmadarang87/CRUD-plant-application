@@ -80,7 +80,7 @@ app.post("/api/add", (req, res) => {
 });
 
 app.patch("/api/edit/:id", (req, res) => {
-    console.log("SEE ME?");
+    console.log(req.body);
     const id = req.body.id;
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
