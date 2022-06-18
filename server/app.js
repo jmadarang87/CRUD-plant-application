@@ -49,8 +49,18 @@ app.get('/createplantstable', (req, res) => {
         res.send('Plants Table Created');
     })
 });
-
-app.get('/api/get', (req, res) => {
+app.get("/api/plants/search=:term", (req, res) => {
+    const searchTerm = "%" + req.params.term + "%";
+    console.log(searchTerm);
+    let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
+    db.query(sql, [searchTerm], (err, result) => {
+        console.log(searchTerm);
+        console.log(result);
+        res.send(result);
+        if (err) console.log(err);
+    });
+});
+app.get('/api/plants', (req, res) => {
     let sql = "SELECT * FROM plantys.plants"
     db.query(sql, (err, result) => {
         console.log(typeof result);
@@ -59,15 +69,16 @@ app.get('/api/get', (req, res) => {
     });
 });
 
-app.get("/api/search/:term", (req, res) => {
-    const searchTerm = "%" + req.params.term + "%";
-    let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
-    db.query(sql, [searchTerm], (err, result) => {
-        console.log(result);
-        res.send(result);
-        if (err) console.log(err);
-    });
-});
+// app.get('/api/get/', (req, res) => {
+//     let sql = "SELECT * FROM plantys.plants"
+//     db.query(sql, (err, result) => {
+//         console.log(typeof result);
+//         console.log(result);
+//         res.send(result);
+//     });
+// });
+
+
 
 app.post("/api/add", (req, res) => {
     const plantName = req.body.plantName;
@@ -85,7 +96,7 @@ app.patch("/api/edit/:id", (req, res) => {
     const id = req.body.id;
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
-    const plantLastWatered = "'" + req.body.plantLastWatered + "'";
+    const plantLastWatered = req.body.plantLastWatered;
     let sql = 'UPDATE plantys.plants SET description = ?, name = ?, lastWatered = ? WHERE id = ?;';
     db.query(sql, [plantName, plantDescription, plantLastWatered, id], (err, result) => {
         console.log(result);
