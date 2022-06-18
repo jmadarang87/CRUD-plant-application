@@ -63,8 +63,8 @@ app.get("/api/search/:term", (req, res) => {
     const searchTerm = "%" + req.params.term + "%";
     let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
     db.query(sql, [searchTerm], (err, result) => {
-        console.log(result);
-        res.send(result);
+        console.log(result[0]);
+        res.send(result[0]);
         if (err) console.log(err);
     });
 });
@@ -74,8 +74,9 @@ app.post("/api/add", (req, res) => {
     const plantDescription = req.body.plantDescription;
     let sql = "INSERT INTO plantys.plants (name, description) VALUES (?,?)"
     db.query(sql, [plantName, plantDescription], (err, result) => {
+        res.send(result);
+        if (err) console.log(err);
     });
-    res.send("Plant Added!!");
 });
 
 app.patch("/api/edit/:id", (req, res) => {
