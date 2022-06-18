@@ -63,8 +63,8 @@ app.get("/api/search/:term", (req, res) => {
     const searchTerm = "%" + req.params.term + "%";
     let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
     db.query(sql, [searchTerm], (err, result) => {
-        console.log(result[0]);
-        res.send(result[0]);
+        console.log(result);
+        res.send(result);
         if (err) console.log(err);
     });
 });
