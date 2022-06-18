@@ -72,8 +72,9 @@ app.get("/api/search/:term", (req, res) => {
 app.post("/api/add", (req, res) => {
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
-    let sql = "INSERT INTO plantys.plants (name, description) VALUES (?,?)"
-    db.query(sql, [plantName, plantDescription], (err, result) => {
+    const plantLastWatered = req.body.plantLastWatered;
+    let sql = "INSERT INTO plantys.plants (name, description, lastWatered) VALUES (?,?,?)"
+    db.query(sql, [plantName, plantDescription, plantLastWatered], (err, result) => {
         res.send(result);
         if (err) console.log(err);
     });
@@ -84,8 +85,9 @@ app.patch("/api/edit/:id", (req, res) => {
     const id = req.body.id;
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
-    let sql = 'UPDATE plantys.plants SET description = ?, name = ? WHERE id = ?;';
-    db.query(sql, [plantName, plantDescription, id], (err, result) => {
+    const plantLastWatered = "'" + req.body.plantLastWatered + "'";
+    let sql = 'UPDATE plantys.plants SET description = ?, name = ?, lastWatered = ? WHERE id = ?;';
+    db.query(sql, [plantName, plantDescription, plantLastWatered, id], (err, result) => {
         console.log(result);
         if (err) console.log(err);
     });
