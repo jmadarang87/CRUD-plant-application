@@ -69,14 +69,13 @@ app.get('/api/plants', (req, res) => {
     });
 });
 
-// app.get('/api/get/', (req, res) => {
-//     let sql = "SELECT * FROM plantys.plants"
-//     db.query(sql, (err, result) => {
-//         console.log(typeof result);
-//         console.log(result);
-//         res.send(result);
-//     });
-// });
+app.get('/api/plants/waternow', (req, res) => {
+    let sql = "SELECT * FROM plantys.plants WHERE DATEDIFF(now(), lastWatered) > 5";
+    db.query(sql, (err, result) => {
+        console.log(result);
+        res.send(result);
+    });
+});
 
 
 
