@@ -3,6 +3,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+
 // set up express server
 const app = express();
 
@@ -21,12 +22,13 @@ db.connect((err) => {
     }
     console.log('MySql is Connected!');
 });
+
 app.use(cors())
 app.use(express.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+
 app.get('/', (req, res) => {
-    let sql = "INSERT INTO planty.plants (plantName, plantDescription)"
     res.send("Hello, World!");
 });
 
@@ -35,7 +37,6 @@ app.get('/createdb', (req, res) => {
     let sql = 'CREATE DATABASE plantys';
     db.query(sql, (err, result) => {
         if (err) throw err;
-        console.log(result);
         res.send('Database created');
     })
 });
@@ -49,36 +50,34 @@ app.get('/createplantstable', (req, res) => {
         res.send('Plants Table Created');
     })
 });
+
+// selects all from database
+app.get('/api/plants', (req, res) => {
+    let sql = "SELECT * FROM plantys.plants"
+    db.query(sql, (err, result) => {
+        res.send(result);
+    });
+});
+
+// search funcionality
 app.get("/api/plants/search=:term", (req, res) => {
     const searchTerm = "%" + req.params.term + "%";
-    console.log(searchTerm);
     let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
     db.query(sql, [searchTerm], (err, result) => {
-        console.log(searchTerm);
-        console.log(result);
         res.send(result);
         if (err) console.log(err);
     });
 });
-app.get('/api/plants', (req, res) => {
-    let sql = "SELECT * FROM plantys.plants"
-    db.query(sql, (err, result) => {
-        console.log(typeof result);
-        console.log(result);
-        res.send(result);
-    });
-});
 
+// returns plants that haven't been watered in over 5 days
 app.get('/api/plants/waternow', (req, res) => {
     let sql = "SELECT * FROM plantys.plants WHERE DATEDIFF(now(), lastWatered) > 5";
     db.query(sql, (err, result) => {
-        console.log(result);
         res.send(result);
     });
 });
 
-
-
+// creates new plant in db
 app.post("/api/add", (req, res) => {
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
@@ -90,25 +89,24 @@ app.post("/api/add", (req, res) => {
     });
 });
 
+// edits plant in db
 app.patch("/api/edit/:id", (req, res) => {
-    console.log(req.body);
     const id = req.body.id;
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
     const plantLastWatered = req.body.plantLastWatered;
     let sql = 'UPDATE plantys.plants SET description = ?, name = ?, lastWatered = ? WHERE id = ?;';
     db.query(sql, [plantName, plantDescription, plantLastWatered, id], (err, result) => {
-        console.log(result);
         if (err) console.log(err);
     });
     res.send("Plant Updated!!");
 });
 
+//deletes plant from db
 app.delete("/api/delete/:id", (req, res) => {
     const id = req.params.id;
     let sql = "DELETE FROM plantys.plants WHERE id = ?"
     db.query(sql, id, (err, result) => {
-        console.log(result);
         if (err) console.log(err);
     });
     res.send("Plant Deleted!!");
