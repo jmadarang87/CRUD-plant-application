@@ -4,6 +4,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+
 // set up express server
 const app = express();
 
@@ -51,6 +52,16 @@ app.get('/createplantstable', (req, res) => {
     })
 });
 
+app.get('/createnotestable', (req, res) => {
+    let sql = `CREATE TABLE IF NOT EXISTS plantys.notes (id INT AUTO_INCREMENT, title VARCHAR(75) NOT NULL, content TEXT NOT NULL, plantid INT NOT NULL, _created TIMESTAMP DEFAULT NOW(), PRIMARY KEY (id), FOREIGN KEY (plantid) REFERENCES plantys.plants (id));`;
+    
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+        res.send('Notes Table Created');
+    })
+});
+
 // selects all from database
 app.get('/api/plants', (req, res) => {
     let sql = "SELECT * FROM plantys.plants"
@@ -60,10 +71,13 @@ app.get('/api/plants', (req, res) => {
 });
 
 // search funcionality
-app.get("/api/plants/search=:term", (req, res) => {
-    const searchTerm = "%" + req.params.term + "%";
+app.get("/api/plantys", (req, res) => {
+    let term = req.query.search;
+    console.log(term);
+    const searchTerm = "%" + term + "%";
     let sql = "SELECT * FROM plantys.plants WHERE name LIKE ?"
     db.query(sql, [searchTerm], (err, result) => {
+        console.log(result);
         res.send(result);
         if (err) console.log(err);
     });
@@ -77,6 +91,16 @@ app.get('/api/plants/waternow', (req, res) => {
     });
 });
 
+app.get('/api/plants/:id/:name', (req, res) => {
+    console.log(req);
+    const id = req.params.id;
+    let sql = "SELECT notes.id, title, content, plantid, _created, name, description, lastWatered FROM plantys.notes LEFT JOIN plantys.plants ON notes.plantid=plants.id WHERE plantid = ?";
+    db.query(sql, [id], (err, result) => {
+        res.send(result);
+        if (err) console.log(err);
+    });
+});
+
 // creates new plant in db
 app.post("/api/add", (req, res) => {
     const plantName = req.body.plantName;
@@ -84,6 +108,28 @@ app.post("/api/add", (req, res) => {
     const plantLastWatered = req.body.plantLastWatered;
     let sql = "INSERT INTO plantys.plants (name, description, lastWatered) VALUES (?,?,?)"
     db.query(sql, [plantName, plantDescription, plantLastWatered], (err, result) => {
+        res.send(result);
+        if (err) console.log(err);
+    });
+});
+
+app.post("/api/addNote", (req, res) => {
+    const noteTitle = req.body.noteTitle;
+    const noteContent = req.body.noteContent;
+    const plantId = req.body.plantId;
+    let sql = "INSERT INTO `plantys`.`notes` (`title`, `content`, `plantid`, `_created`) VALUES (?, ?, ?, now());"
+    db.query(sql, [noteTitle, noteContent, plantId], (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    });
+});
+
+// delete note from plants page
+app.delete("/api/addNote/delete/:id", (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    let sql = "DELETE FROM plantys.notes WHERE id = ?;"
+    db.query(sql, id, (err, result) => {
         res.send(result);
         if (err) console.log(err);
     });
