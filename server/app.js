@@ -62,6 +62,17 @@ app.get('/createnotestable', (req, res) => {
     })
 });
 
+app.get('/createimagestable', (req, res) => {
+    let sql = `CREATE TABLE IF NOT EXISTS plantys.images(id INT AUTO_INCREMENT,imgURL TEXT NOT NULL,plantid INT NOT NULL,PRIMARY KEY (id),FOREIGN KEY (plantid) REFERENCES plantys.plants (id));`;
+    
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+        res.send('Images Table Created');
+    })
+});
+
+
 // selects all from database
 app.get('/api/plants', (req, res) => {
     let sql = "SELECT * FROM plantys.plants"
@@ -94,9 +105,30 @@ app.get('/api/plants/waternow', (req, res) => {
 app.get('/api/plants/:id/:name', (req, res) => {
     console.log(req);
     const id = req.params.id;
-    let sql = "SELECT notes.id, title, content, plantid, _created, name, description, lastWatered FROM plantys.notes LEFT JOIN plantys.plants ON notes.plantid=plants.id WHERE plantid = ?";
+    let sql = "SELECT name, description, lastWatered FROM plantys.plants WHERE id = ?";
     db.query(sql, [id], (err, result) => {
         res.send(result);
+        if (err) console.log(err);
+    });
+});
+
+app.get('/api/notes/:id/:name', (req, res) => {
+    console.log(req);
+    const id = req.params.id;
+    let sql = "SELECT notes.id, title, content, plantid, _created FROM plantys.notes WHERE plantid = ?";
+    db.query(sql, [id], (err, result) => {
+        res.send(result);
+        if (err) console.log(err);
+    });
+});
+
+app.get('/api/images/:id', (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    let sql = "SELECT imgURL FROM plantys.images WHERE plantid = ?";
+    db.query(sql, [id], (err, result) => {
+        res.send(result);
+        console.log(result);
         if (err) console.log(err);
     });
 });
@@ -106,11 +138,23 @@ app.post("/api/add", (req, res) => {
     const plantName = req.body.plantName;
     const plantDescription = req.body.plantDescription;
     const plantLastWatered = req.body.plantLastWatered;
-    let sql = "INSERT INTO plantys.plants (name, description, lastWatered) VALUES (?,?,?)"
+    let sql = "INSERT INTO plantys.plants (name, description, lastWatered) VALUES (?,?,?);"
     db.query(sql, [plantName, plantDescription, plantLastWatered], (err, result) => {
         res.send(result);
+        console.log(result);
         if (err) console.log(err);
-    });
+    })
+});
+
+app.post("/api/add/images", (req, res) => {
+    const id = req.body.plantId;
+    const plantImgUrl = req.body.plantImgUrl;
+    let sql = "INSERT INTO plantys.images (imgURL, plantid) VALUES (?,?);"
+    db.query(sql, [plantImgUrl, id], (err, result) => {
+        res.send(result);
+        console.log(result);
+        if (err) console.log(err);
+    })
 });
 
 app.post("/api/addNote", (req, res) => {
@@ -151,8 +195,8 @@ app.patch("/api/edit/:id", (req, res) => {
 //deletes plant from db
 app.delete("/api/delete/:id", (req, res) => {
     const id = req.params.id;
-    let sql = "DELETE FROM plantys.plants WHERE id = ?"
-    db.query(sql, id, (err, result) => {
+    let sql = "DELETE FROM plantys.images WHERE plantid = ?; DELETE FROM plantys.notes WHERE id = ?; DELETE FROM plantys.plants WHERE id = ?;"
+    db.query(sql, [id, id, id], (err, result) => {
         if (err) console.log(err);
     });
     res.send("Plant Deleted!!");
