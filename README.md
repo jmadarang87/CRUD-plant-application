@@ -5,12 +5,6 @@ Full-Stack CRUD App to track plant collection + details (images, last watered an
 * Frontend: React, JavaScript, Firebase (image upload + storage), CSS, HTML
 * Backend: Nodejs, Express, MySQL
 
-## What I learned
-* Array of Objects
-* Math object to generate random number 
-* Set Interval
-* Add Event Listener (button)
-
 ## Features
 * Create, Read, Update and Delete plant (name, description, last watered, image) to collection
 * Search functionality
@@ -24,7 +18,6 @@ Full-Stack CRUD App to track plant collection + details (images, last watered an
 
 ## What I learned
 * How to organize and name RESTful API
-
 
 ## Future Improvements
 * Add registration and authentication
