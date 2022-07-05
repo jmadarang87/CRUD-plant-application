@@ -1,5 +1,5 @@
 # Plant Application
-Full-Stack CRUD App to track plant collection + details (images, last watered and notes).
+Full-Stack CRUD App to track plant collection + details (images, last watered and notes)
 
 ## Technologies Used
 * Frontend: React, JavaScript, Firebase (image upload + storage), CSS, HTML
@@ -8,7 +8,7 @@ Full-Stack CRUD App to track plant collection + details (images, last watered an
 ## Features
 * Create, Read, Update and Delete plant (name, description, last watered, image) to collection
 * Search functionality
-* Ability to add notes to individual plants
+* Add notes (title, content + date) to individual plants
 * RESTful API with NodeJS, Express and MySQL
 
 ## Challenges
@@ -21,7 +21,6 @@ Full-Stack CRUD App to track plant collection + details (images, last watered an
 
 ## Future Improvements
 * Add registration and authentication
-* Add last fertilized
 * Email / Export plant watering schedule to user/friends
 
 ## Preview
